@@ -56,7 +56,7 @@
     position:fixed; inset:0; z-index:150; pointer-events:none;
   }
   .corner-tl, .corner-tr{
-    position:absolute; top:26px; pointer-events:auto;
+    position:absolute; top:14px; pointer-events:auto;
   }
   .corner-tl{ left:32px; }
   .corner-logo{
@@ -86,10 +86,20 @@
     min-height:100vh; min-height:calc(var(--vh, 1vh) * 100);
     width:100%;
     display:flex; flex-direction:column; justify-content:flex-end;
-    background:linear-gradient(180deg, rgba(12,12,12,0.05) 0%, rgba(12,12,12,0.1) 40%, rgba(12,12,12,0.72) 100%), var(--black) url('images/hero-bg.jpg') center/cover no-repeat;
+    background:var(--black);
+    overflow:hidden;
+  }
+  .hero-video{
+    position:absolute; inset:0; z-index:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
+  .hero-overlay{
+    position:absolute; inset:0; z-index:1;
+    background:linear-gradient(180deg, rgba(12,12,12,0.05) 0%, rgba(12,12,12,0.1) 40%, rgba(12,12,12,0.72) 100%);
   }
   .hero-bottom{
-    position:relative; z-index:2;
+    position:relative; z-index:3;
     display:flex; justify-content:space-between; align-items:flex-end;
     padding:0 40px 44px;
     flex-wrap:wrap; gap:30px;
@@ -123,7 +133,7 @@
   .btn-reserve:hover{ background:var(--white); color:var(--black); }
 
   .scroll-cue{
-    position:absolute; bottom:150px; left:50%; transform:translateX(-50%); z-index:2;
+    position:absolute; bottom:150px; left:50%; transform:translateX(-50%); z-index:3;
     color:rgba(255,255,255,0.6); font-size:10px; letter-spacing:0.2em; text-transform:uppercase;
     display:flex; flex-direction:column; align-items:center; gap:10px;
   }
@@ -389,10 +399,10 @@
   @media (max-width: 980px){
     .section-pad{ padding:90px 20px; }
 
-    .corner-tl{ left:20px; top:20px; }
+    .corner-tl{ left:20px; top:10px; }
     .corner-logo{ width:44px; height:44px; }
     .corner-tr{
-      right:20px; top:20px;
+      right:20px; top:10px;
       gap:5px 14px;
       max-width:56vw;
       font-size:0;
@@ -443,6 +453,8 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero" id="hero">
+    <video class="hero-video" src="images/hero-bg.mp4" autoplay muted loop playsinline poster="images/hero-bg.jpg"></video>
+    <div class="hero-overlay"></div>
     <div class="hero-bottom">
       <div class="hero-info reveal in">
         <p class="eyebrow">Est. [Year]</p>
