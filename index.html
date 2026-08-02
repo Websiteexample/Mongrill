@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Chao's Mongolian Grill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#760000;
+    --red-deep:#7d0a0a;
+    --red-bright:#d41616;
+    --white:#ffffff;
+    --off:#f7f5f3;
+    --black:#0c0c0c;
+    --ease: cubic-bezier(.22,.61,.36,1);
+    --ease-soft: cubic-bezier(.16,.84,.44,1);
+    --vh: 1vh;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--white);
+    color:var(--black);
+    font-family:'Archivo', sans-serif;
+    font-weight:400;
+    overflow-x:hidden;
+    -webkit-text-size-adjust:100%;
+  }
+  h1,h2,h3,.display{
+    font-family:'Bebas Neue', sans-serif;
+    font-weight:400;
+    letter-spacing:0.01em;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{display:block; width:100%; height:100%; object-fit:cover;}
+  button{font-family:inherit;}
+
+  .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .9s var(--ease-soft), transform .9s var(--ease-soft);
+  }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+    html{scroll-behavior:auto;}
+    .gallery-frame{ transition:none !important; }
+  }
+
+  /* ---------- CORNER NAV (Hiroto Sato style) ---------- */
+  .corner-nav{
+    position:fixed; inset:0; z-index:150; pointer-events:none;
+  }
+  .corner-tl, .corner-tr{
+    position:absolute; top:26px; pointer-events:auto;
+  }
+  .corner-tl{ left:32px; }
+  .corner-logo{
+    display:block;
+    width:64px; height:64px;
+    transition:width .4s var(--ease), height .4s var(--ease);
+  }
+  .corner-logo img{ width:100%; height:100%; object-fit:contain; }
+
+  .corner-tr{ right:32px; display:flex; gap:22px; flex-wrap:wrap; justify-content:flex-end; max-width:60vw; }
+  .corner-tr a{
+    font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; font-weight:600;
+    position:relative; padding-bottom:3px; white-space:nowrap;
+  }
+  .corner-tr a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:1.5px; background:currentColor;
+    transition:width .35s var(--ease-soft);
+  }
+  .corner-tr a:hover::after{ width:100%; }
+
+  .nav-on-dark .corner-tl, .nav-on-dark .corner-tr{ color:var(--white); }
+  .nav-on-light .corner-tl, .nav-on-light .corner-tr{ color:var(--black); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh; min-height:calc(var(--vh, 1vh) * 100);
+    width:100%;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    background:linear-gradient(180deg, rgba(12,12,12,0.05) 0%, rgba(12,12,12,0.1) 40%, rgba(12,12,12,0.72) 100%), var(--black) url('images/hero-bg.jpg') center/cover no-repeat;
+  }
+  .hero-bottom{
+    position:relative; z-index:2;
+    display:flex; justify-content:space-between; align-items:flex-end;
+    padding:0 40px 44px;
+    flex-wrap:wrap; gap:30px;
+  }
+  .hero-info{ color:var(--white); }
+  .hero-info .eyebrow{
+    font-size:10.5px; letter-spacing:0.24em; text-transform:uppercase; opacity:0.72; margin-bottom:10px; font-weight:600;
+  }
+  .hero-info h1{
+    font-size:clamp(46px, 7vw, 86px);
+    line-height:0.94;
+    margin-bottom:16px;
+  }
+  .hero-info address{
+    font-style:normal;
+    font-size:13.5px;
+    letter-spacing:0.03em;
+    opacity:0.82;
+    line-height:1.7;
+  }
+  .btn-reserve{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:17px 40px;
+    border:1.5px solid var(--white);
+    color:var(--white);
+    font-size:12px; letter-spacing:0.2em; text-transform:uppercase; font-weight:600;
+    border-radius:0;
+    transition:all .35s var(--ease-soft);
+    flex-shrink:0;
+  }
+  .btn-reserve:hover{ background:var(--white); color:var(--black); }
+
+  .scroll-cue{
+    position:absolute; bottom:150px; left:50%; transform:translateX(-50%); z-index:2;
+    color:rgba(255,255,255,0.6); font-size:10px; letter-spacing:0.2em; text-transform:uppercase;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+  }
+  .scroll-cue .stem{ width:1px; height:30px; background:rgba(255,255,255,0.3); position:relative; overflow:hidden; }
+  .scroll-cue .stem::after{
+    content:''; position:absolute; top:-100%; left:0; width:100%; height:100%; background:var(--white);
+    animation:pour 2.3s ease-in-out infinite;
+  }
+  @keyframes pour{ 0%{top:-100%;} 60%{top:100%;} 100%{top:100%;} }
+
+  section{ position:relative; }
+  .section-pad{ padding:140px 40px; }
+  .container{ max-width:1280px; margin:0 auto; }
+
+  /* ---------- OUR STORY — auto rotating gallery ---------- */
+  .story{
+    background:var(--black);
+    color:var(--white);
+    min-height:100vh;
+    min-height:calc(var(--vh, 1vh) * 100);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:0;
+    overflow:hidden;
+  }
+  .gallery-stage{
+    position:relative;
+    width:100%; height:100vh; height:calc(var(--vh, 1vh) * 100);
+  }
+  .gallery-frame{
+    position:absolute; inset:0;
+    background-size:cover; background-position:center;
+    opacity:0;
+    transition:opacity 1.4s ease;
+  }
+  .gallery-frame.active{ opacity:1; }
+  .gallery-frame::after{
+    content:'';
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(12,12,12,0.55) 0%, rgba(12,12,12,0.15) 30%, rgba(12,12,12,0.2) 70%, rgba(12,12,12,0.6) 100%);
+  }
+  .gallery-text{
+    position:absolute; top:44px; right:40px; z-index:3;
+    max-width:480px; text-align:right;
+  }
+  .gallery-eyebrow{
+    font-size:10.5px; letter-spacing:0.24em; text-transform:uppercase; opacity:0.7; margin-bottom:10px; font-weight:600;
+  }
+  .gallery-cap{
+    position:relative; height:120px;
+  }
+  .gallery-cap-item{
+    position:absolute; top:0; right:0; width:100%;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .8s ease, transform .8s var(--ease-soft);
+  }
+  .gallery-cap-item.active{ opacity:1; transform:translateY(0); }
+  .gallery-cap-item h3{
+    font-size:clamp(30px, 3.4vw, 42px);
+    line-height:1.02;
+    margin-bottom:10px;
+  }
+  .gallery-cap-item p{
+    font-size:13.5px; line-height:1.7; opacity:0.82; font-weight:300;
+  }
+  .gallery-index{
+    position:absolute; bottom:40px; right:40px; z-index:3;
+    display:flex; gap:8px;
+  }
+  .gallery-index span{
+    width:26px; height:2px; background:rgba(255,255,255,0.3);
+    position:relative; overflow:hidden;
+  }
+  .gallery-index span.active::after{
+    content:''; position:absolute; inset:0; background:var(--white);
+    animation:idxFill 8s linear forwards;
+  }
+  @keyframes idxFill{ from{ transform:scaleX(0); transform-origin:left; } to{ transform:scaleX(1); transform-origin:left; } }
+
+  /* ---------- MENU ---------- */
+  .menu-section{ background:var(--off); }
+  .menu-layout{
+    display:grid;
+    grid-template-columns:0.9fr 1.1fr;
+    gap:0;
+    min-height:100vh;
+    min-height:calc(var(--vh, 1vh) * 100);
+  }
+  .menu-col{
+    padding:150px 60px;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .menu-col .eyebrow{
+    font-size:10.5px; letter-spacing:0.24em; text-transform:uppercase; color:var(--red); font-weight:700; margin-bottom:16px;
+  }
+  .menu-col h2{ font-size:clamp(38px, 5vw, 58px); margin-bottom:40px; line-height:0.95; }
+  .menu-list{ display:flex; flex-direction:column; }
+  .menu-row{
+    display:grid; grid-template-columns:1fr auto; gap:16px;
+    padding:20px 0; border-bottom:1px solid rgba(12,12,12,0.1);
+  }
+  .menu-row:first-child{ padding-top:0; }
+  .menu-row-name{ font-family:'Bebas Neue',sans-serif; font-size:19px; letter-spacing:0.01em; margin-bottom:5px; }
+  .menu-row-desc{ font-size:12.5px; line-height:1.6; opacity:0.62; max-width:400px; }
+  .menu-row-price{ font-size:14px; font-weight:600; color:var(--red); white-space:nowrap; padding-top:2px; }
+  .menu-note{ margin-top:26px; font-size:11px; opacity:0.5; font-style:italic; }
+  .menu-image{ position:relative; overflow:hidden; }
+  .menu-image img{ transition:transform 1.2s var(--ease-soft); }
+  .menu-image:hover img{ transform:scale(1.05); }
+
+  /* ---------- RESERVATION ---------- */
+  .reserve{ background:var(--white); }
+  .reserve .container{
+    display:grid; grid-template-columns:0.85fr 1.15fr; gap:70px; align-items:center;
+  }
+  .reserve-images{ position:relative; height:660px; }
+  .reserve-img-a{
+    position:absolute; top:0; left:0; width:78%; height:62%;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.3);
+    overflow:hidden;
+  }
+  .reserve-img-b{
+    position:absolute; bottom:0; right:0; width:64%; height:52%;
+    box-shadow:0 30px 60px -18px rgba(0,0,0,0.35);
+    border:10px solid var(--white);
+    overflow:hidden;
+  }
+  .reserve-img-a img, .reserve-img-b img{ transition:transform 1s var(--ease-soft); }
+  .reserve-images:hover .reserve-img-a img{ transform:scale(1.06); }
+  .reserve-images:hover .reserve-img-b img{ transform:scale(1.06); }
+
+  .reserve-form-wrap .eyebrow{
+    font-size:10.5px; letter-spacing:0.24em; text-transform:uppercase; color:var(--red); font-weight:700; margin-bottom:16px;
+  }
+  .reserve-form-wrap h2{ font-size:clamp(38px, 5vw, 56px); margin-bottom:16px; line-height:0.96; }
+  .reserve-form-wrap > p{ font-size:14.5px; opacity:0.62; line-height:1.75; margin-bottom:36px; max-width:420px; }
+
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-bottom:22px; }
+  .field{ display:flex; flex-direction:column; gap:8px; position:relative; }
+  .field label{ font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--red); font-weight:700; }
+  .field input{
+    font-family:'Archivo',sans-serif; font-size:15px; padding:13px 2px;
+    background:transparent; border:none; border-bottom:1.5px solid rgba(12,12,12,0.15);
+    color:var(--black); outline:none; transition:border-color .3s ease;
+    -webkit-appearance:none; appearance:none; border-radius:0;
+  }
+  .field input::placeholder{ color:rgba(12,12,12,0.32); }
+  .field .underline{
+    position:absolute; left:0; bottom:0; height:1.5px; width:0; background:var(--red);
+    transition:width .4s var(--ease-soft);
+  }
+  .field input:focus ~ .underline{ width:100%; }
+  .field.full{ grid-column:1/-1; }
+  .submit-btn{
+    margin-top:10px;
+    background:transparent;
+    color:var(--red);
+    border:1.5px solid var(--red);
+    padding:18px 44px;
+    font-size:12px; letter-spacing:0.2em; text-transform:uppercase; font-weight:700;
+    cursor:pointer; width:100%;
+    transition:all .35s var(--ease-soft);
+  }
+  .submit-btn:hover{ background:var(--red); color:var(--white); }
+  .submit-btn:active{ transform:scale(.98); }
+  .submit-btn.sent{ background:var(--black); border-color:var(--black); color:var(--white); }
+  .form-hint{ margin-top:20px; font-size:11px; line-height:1.6; opacity:0.5; font-style:italic; }
+
+  /* ---------- VISIT / MAP — two panels, full-bleed, touching ---------- */
+  .visit{ background:var(--black); }
+  .visit-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    align-items:stretch;
+    min-height:100vh;
+    min-height:calc(var(--vh, 1vh) * 100);
+    position:relative;
+  }
+  .visit-panel{
+    position:relative;
+    overflow:hidden;
+  }
+  .visit-panel.map-panel img{ opacity:0.95; }
+  .visit-panel.info-panel{
+    background:var(--red);
+    padding:64px 60px;
+    display:flex; flex-direction:column; justify-content:center;
+    color:var(--white);
+  }
+  .info-panel .eyebrow{
+    font-size:10.5px; letter-spacing:0.24em; text-transform:uppercase; color:var(--white); opacity:0.8; font-weight:700; margin-bottom:20px;
+  }
+  .info-panel h2{ font-size:clamp(32px, 4vw, 44px); margin-bottom:34px; line-height:0.98; color:var(--white); }
+  .visit-block{ margin-bottom:26px; padding-bottom:26px; border-bottom:1px solid rgba(255,255,255,0.22); }
+  .visit-block:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  .visit-block .label{ font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--white); opacity:0.75; margin-bottom:8px; font-weight:700; }
+  .visit-block .hours-row{ display:flex; justify-content:space-between; font-size:13.5px; padding:4px 0; color:rgba(255,255,255,0.9); }
+  .visit-block .hours-row span:last-child{ font-weight:600; color:var(--white); }
+  .visit-block address{ font-style:normal; font-family:'Bebas Neue',sans-serif; font-size:18px; line-height:1.5; color:var(--white); }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    background:var(--black);
+    color:var(--white);
+    padding:0;
+  }
+  .footer-top{
+    display:grid;
+    grid-template-columns:1.3fr 0.9fr 0.9fr 0.9fr;
+    gap:50px;
+    padding:90px 40px 60px;
+    max-width:1280px;
+    margin:0 auto;
+  }
+  .footer-brand-word{
+    font-family:'Bebas Neue', sans-serif;
+    font-size:30px;
+    margin-bottom:18px;
+    letter-spacing:0.01em;
+  }
+  .footer-brand-word span{ color:var(--red-bright, #d41616); }
+  .footer-brand p{ font-size:12.5px; line-height:1.85; opacity:0.6; max-width:280px; }
+  .footer-col-title{
+    font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--red-bright, #d41616); font-weight:700;
+    margin-bottom:22px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.14);
+  }
+  .footer-col ul{ list-style:none; display:flex; flex-direction:column; gap:14px; }
+  .footer-col ul li a{ font-size:13px; opacity:0.72; transition:opacity .3s ease, padding-left .3s ease; display:inline-block; }
+  .footer-col ul li a:hover{ opacity:1; padding-left:4px; }
+  .footer-col address{ font-style:normal; font-size:13px; line-height:2; opacity:0.72; }
+  .footer-social{ display:flex; gap:10px; margin-top:24px; }
+  .footer-social a{
+    width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+    border:1.5px solid rgba(255,255,255,0.25); font-size:10.5px; opacity:0.75;
+    transition:all .3s ease;
+  }
+  .footer-social a:hover{ border-color:var(--red-bright, #d41616); background:var(--red-bright,#d41616); opacity:1; }
+  .footer-bottom{
+    border-top:1px solid rgba(255,255,255,0.1);
+    padding:26px 40px; max-width:1280px; margin:0 auto;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+  }
+  footer .fine{ font-size:11px; opacity:0.5; }
+
+  .to-top{
+    position:fixed; right:22px; bottom:22px; z-index:120;
+    width:46px; height:46px;
+    background:var(--red); color:#fff; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transform:translateY(10px) scale(.9);
+    transition:opacity .4s var(--ease-soft), transform .4s var(--ease-soft), background .3s ease;
+    box-shadow:0 10px 24px -8px rgba(169,15,15,0.55);
+  }
+  .to-top.show{ opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }
+  .to-top:hover{ background:var(--red-bright); }
+
+  /* =======================================================
+     MOBILE
+     ======================================================= */
+  @media (max-width: 980px){
+    .section-pad{ padding:90px 20px; }
+
+    .corner-tl{ left:20px; top:20px; }
+    .corner-logo{ width:44px; height:44px; }
+    .corner-tr{
+      right:20px; top:20px;
+      gap:5px 14px;
+      max-width:56vw;
+      font-size:0;
+    }
+    .corner-tr a{ font-size:9px; letter-spacing:0.1em; }
+
+    .hero-bottom{ flex-direction:column; align-items:flex-start; padding:0 20px 40px; }
+    .scroll-cue{ display:none; }
+
+    .gallery-text{ top:70px; right:20px; left:20px; max-width:none; text-align:left; }
+    .gallery-index{ right:20px; bottom:24px; }
+
+    .menu-layout{ grid-template-columns:1fr; }
+    .menu-col{ padding:80px 20px 50px; }
+    .menu-image{ height:340px; }
+
+    .reserve .container{ grid-template-columns:1fr; gap:50px; }
+    .reserve-images{ height:56vh; min-height:340px; }
+    .form-row{ grid-template-columns:1fr; gap:18px; margin-bottom:18px; }
+
+    .visit-grid{ grid-template-columns:1fr; min-height:0; }
+    .visit-panel.map-panel{ min-height:280px; }
+    .info-panel{ padding:56px 24px; }
+
+    .footer-top{ grid-template-columns:1fr; gap:40px; padding:64px 20px 40px; }
+    .footer-bottom{ padding:20px 20px 28px; flex-direction:column; align-items:flex-start; gap:8px; }
+
+    .to-top{ right:16px; bottom:16px; width:42px; height:42px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="corner-nav nav-on-dark" id="cornerNav">
+    <a href="#" class="corner-tl" id="brandLink" aria-label="Chao's Mongolian Grill — back to top">
+      <span class="corner-logo">
+        <img src="images/logo.png" alt="Chao's Mongolian Grill logo">
+      </span>
+    </a>
+    <div class="corner-tr">
+      <a href="#hero" data-section>Home</a>
+      <a href="#story" data-section>Our Story</a>
+      <a href="#menu" data-section>Menu</a>
+      <a href="#visit" data-section>Visit</a>
+      <a href="#reserve" data-section>Reserve</a>
+    </div>
+  </div>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-bottom">
+      <div class="hero-info reveal in">
+        <p class="eyebrow">Est. [Year]</p>
+        <h1>Chao's<br>Mongolian Grill</h1>
+        <address>[Street Address]<br>[City, State ZIP]</address>
+      </div>
+      <a href="#reserve" class="btn-reserve" data-section>Reserve</a>
+    </div>
+    <div class="scroll-cue"><span class="stem"></span></div>
+  </section>
+
+  <!-- ============ OUR STORY — AUTO-ROTATING GALLERY ============ -->
+  <section class="story" id="story">
+    <div class="gallery-stage" id="galleryStage">
+      <div class="gallery-frame active" style="background-image:url('images/story-1.jpg')"></div>
+      <div class="gallery-frame" style="background-image:url('images/story-2.jpg')"></div>
+      <div class="gallery-frame" style="background-image:url('images/story-3.jpg')"></div>
+      <div class="gallery-frame" style="background-image:url('images/story-4.jpg')"></div>
+
+      <div class="gallery-text">
+        <p class="gallery-eyebrow">Our Story</p>
+        <div class="gallery-cap">
+          <div class="gallery-cap-item active">
+            <h3>Fire &amp; Flat-Top</h3>
+            <p>[Client to provide: opening line about how the restaurant started, the flat-top grill tradition, or what inspired the concept.]</p>
+          </div>
+          <div class="gallery-cap-item">
+            <h3>Fresh, Always</h3>
+            <p>[Client to provide: description of daily-prepped ingredients, proteins, vegetables, sauces.]</p>
+          </div>
+          <div class="gallery-cap-item">
+            <h3>Build Your Own</h3>
+            <p>[Client to provide: description of the customizable bowl concept guests love.]</p>
+          </div>
+          <div class="gallery-cap-item">
+            <h3>A Table for Everyone</h3>
+            <p>[Client to provide: description of the atmosphere, staff, and community around the restaurant.]</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-index" id="galleryIndex">
+        <span class="active"></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MENU ============ -->
+  <section class="menu-section" id="menu">
+    <div class="menu-layout">
+      <div class="menu-col reveal">
+        <p class="eyebrow">The Menu</p>
+        <h2>Made Fresh,<br>Served Hot</h2>
+        <div class="menu-list">
+          <div class="menu-row">
+            <div><div class="menu-row-name">Jam Bong</div><div class="menu-row-desc">Spicy noodle soup with seafood, meat and vegetables.</div></div>
+            <div class="menu-row-price">$13.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Ja Jang Myun</div><div class="menu-row-desc">Seafood, meat and vegetables with black soybean sauce.</div></div>
+            <div class="menu-row-price">$13.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Udong</div><div class="menu-row-desc">Seafood, meat and vegetables with clear soup.</div></div>
+            <div class="menu-row-price">$13.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Wool Myun</div><div class="menu-row-desc">Thick broth soup with seafood, meat and vegetables.</div></div>
+            <div class="menu-row-price">$13.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Stir Fried Rice</div><div class="menu-row-desc">Combination fried rice.</div></div>
+            <div class="menu-row-price">$10.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Jap Choe Bob</div><div class="menu-row-desc">Stir fried clear noodles with meat and vegetables. Comes with rice.</div></div>
+            <div class="menu-row-price">$14.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Jap Tong Bob</div><div class="menu-row-desc">Stir fried seafood, meat and vegetables with brown sauce.</div></div>
+            <div class="menu-row-price">$15.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Fried Dumplings</div><div class="menu-row-desc">[Client to confirm filling.]</div></div>
+            <div class="menu-row-price">$10.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Tang Su Yuk</div><div class="menu-row-desc">Deep fried pork with sweet and sour sauce.</div></div>
+            <div class="menu-row-price">$16.95</div>
+          </div>
+          <div class="menu-row">
+            <div><div class="menu-row-name">Kan Poong Ki</div><div class="menu-row-desc">Deep fried chicken in hot and sweet sauce.</div></div>
+            <div class="menu-row-price">$16.95</div>
+          </div>
+        </div>
+        <p class="menu-note">[Client to confirm: allergen info or build-your-own-bowl pricing if separate.]</p>
+      </div>
+      <div class="menu-image reveal">
+        <img src="images/menu-dish.jpg" alt="Signature dish">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESERVATION ============ -->
+  <section class="reserve" id="reserve">
+    <div class="section-pad container">
+      <div class="reserve-images reveal">
+        <div class="reserve-img-a"><img src="images/reserve-1.jpg" alt="Restaurant interior"></div>
+        <div class="reserve-img-b"><img src="images/reserve-2.jpg" alt="Dish detail"></div>
+      </div>
+      <div class="reserve-form-wrap reveal">
+        <p class="eyebrow">Reservations</p>
+        <h2>Reserve<br>a Table</h2>
+        <p>Walk-ins welcome, but for groups or peak hours, we'd love a heads up.</p>
+        <form id="reserveForm" novalidate>
+          <div class="form-row">
+            <div class="field"><label>Full Name</label><input type="text" name="name" placeholder="Your name" required><span class="underline"></span></div>
+            <div class="field"><label>Phone</label><input type="tel" name="phone" placeholder="(423) 000-0000" required><span class="underline"></span></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label>Date</label><input type="date" name="date" required><span class="underline"></span></div>
+            <div class="field"><label>Time</label><input type="time" name="time" required><span class="underline"></span></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label>Guests</label><input type="number" name="guests" min="1" placeholder="e.g. 2" required><span class="underline"></span></div>
+            <div class="field"><label>Occasion</label><input type="text" name="occasion" placeholder="Optional"><span class="underline"></span></div>
+          </div>
+          <div class="form-row">
+            <div class="field full"><label>Notes</label><input type="text" name="notes" placeholder="Anything we should know"><span class="underline"></span></div>
+          </div>
+          <button type="submit" class="submit-btn" id="submitBtn">Send Reservation Request</button>
+          <p class="form-hint">[Placeholder phone number below — replace with the business's number. Submitting opens the guest's messaging app with the reservation pre-filled as a text.]</p>
+        </form>
+
+        <script>
+          document.getElementById('reserveForm').addEventListener('submit', function(e){
+            e.preventDefault();
+            const f = e.target;
+            const name = f.name.value.trim();
+            const phone = f.phone.value.trim();
+            const date = f.date.value;
+            const time = f.time.value;
+            const guests = f.guests.value.trim();
+            const occasion = f.occasion.value.trim();
+            const notes = f.notes.value.trim();
+
+            let message = `Reservation request — ${name}\nPhone: ${phone}\nDate: ${date}\nTime: ${time}\nGuests: ${guests}`;
+            if(occasion) message += `\nOccasion: ${occasion}`;
+            if(notes) message += `\nNotes: ${notes}`;
+
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('sent');
+            btn.textContent = 'Opening messages…';
+            setTimeout(() => { btn.classList.remove('sent'); btn.textContent = 'Send Reservation Request'; }, 2600);
+
+            const businessNumber = "14230000000";
+            const smsUrl = `sms:${businessNumber}?&body=${encodeURIComponent(message)}`;
+            window.location.href = smsUrl;
+          });
+        </script>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VISIT — TWO TOUCHING PANELS ============ -->
+  <section class="visit" id="visit">
+    <div class="visit-grid">
+      <div class="visit-panel map-panel reveal">
+        <img src="images/map.jpg" alt="Map">
+      </div>
+      <div class="visit-panel info-panel reveal">
+        <p class="eyebrow">Visit</p>
+        <h2>Come Get Fed</h2>
+        <div class="visit-block">
+          <div class="label">Address</div>
+          <address>[Street Address]<br>[City, State]</address>
+        </div>
+        <div class="visit-block">
+          <div class="label">Hours</div>
+          <div class="hours-row"><span>Mon – Thu</span><span>11:00 AM – 9:00 PM</span></div>
+          <div class="hours-row"><span>Fri – Sat</span><span>11:00 AM – 10:00 PM</span></div>
+          <div class="hours-row"><span>Sunday</span><span>12:00 PM – 8:00 PM</span></div>
+        </div>
+        <div class="visit-block">
+          <div class="label">Good to Know</div>
+          <div class="hours-row"><span>Build-your-own bowl</span><span>Lunch &amp; Dinner</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-brand-word">CHAO'S <span>MONGOLIAN GRILL</span></div>
+        <p>Build-your-own bowls, hand-made noodle dishes, and honest value — grilled fresh, served hot.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Facebook">FB</a>
+          <a href="#" aria-label="Google">G</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">Explore</p>
+        <ul>
+          <li><a href="#story" data-section>Our Story</a></li>
+          <li><a href="#menu" data-section>Menu</a></li>
+          <li><a href="#reserve" data-section>Reserve</a></li>
+          <li><a href="#visit" data-section>Visit</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">Visit Us</p>
+        <address>[Street Address]<br>[City, State] [ZIP]</address>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">Contact</p>
+        <address>[Phone Number]<br>[Email Address]</address>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="fine">© 2025 Chao's Mongolian Grill</div>
+      <div class="fine">Build-Your-Own Bowl · Fresh Daily</div>
+    </div>
+  </footer>
+
+  <button class="to-top" id="toTop" aria-label="Back to top">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 13V3M8 3L3 8M8 3l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <script>
+    function setVh(){
+      document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+    }
+    setVh();
+    window.addEventListener('resize', setVh);
+    window.addEventListener('orientationchange', setVh);
+
+    document.getElementById('brandLink').addEventListener('click', function(e){
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.querySelectorAll('[data-section]').forEach(link => {
+      link.addEventListener('click', function(e){
+        const targetId = this.getAttribute('href');
+        const target = document.querySelector(targetId);
+        if(!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior:'smooth', block:'start' });
+      });
+    });
+
+    const cornerNav = document.getElementById('cornerNav');
+    function updateNavTheme(){
+      const heroRect = document.getElementById('hero').getBoundingClientRect();
+      const storyRect = document.getElementById('story').getBoundingClientRect();
+      const inDark = (heroRect.top < 80 && heroRect.bottom > 80) || (storyRect.top < 80 && storyRect.bottom > 80);
+      cornerNav.classList.toggle('nav-on-dark', inDark);
+      cornerNav.classList.toggle('nav-on-light', !inDark);
+    }
+
+    const toTop = document.getElementById('toTop');
+    function updateOnScroll(){
+      updateNavTheme();
+      if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+    }
+    window.addEventListener('scroll', updateOnScroll, { passive:true });
+    window.addEventListener('resize', updateOnScroll);
+    updateOnScroll();
+
+    toTop.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+    const revealEls = document.querySelectorAll('.reveal');
+    if('IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting){
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.14, rootMargin: '0px 0px -60px 0px' });
+      revealEls.forEach(el => io.observe(el));
+    } else {
+      revealEls.forEach(el => el.classList.add('in'));
+    }
+
+    const frames = document.querySelectorAll('.gallery-frame');
+    const captions = document.querySelectorAll('.gallery-cap-item');
+    const idxDots = document.querySelectorAll('#galleryIndex span');
+    let galleryIdx = 0;
+    const GALLERY_INTERVAL = 8000;
+
+    function showGalleryFrame(i){
+      frames.forEach((f,fi)=> f.classList.toggle('active', fi===i));
+      captions.forEach((c,ci)=> c.classList.toggle('active', ci===i));
+      idxDots.forEach((d,di)=>{
+        d.classList.remove('active');
+        void d.offsetWidth;
+        if(di===i) d.classList.add('active');
+      });
+    }
+    setInterval(()=>{
+      galleryIdx = (galleryIdx+1) % frames.length;
+      showGalleryFrame(galleryIdx);
+    }, GALLERY_INTERVAL);
+  </script>
+</body>
+</html>
